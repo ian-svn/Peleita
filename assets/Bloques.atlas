@@ -1,0 +1,9 @@
+Bloques.png
+size:128,64
+repeat:none
+Bloque_cielo
+bounds:86,2,40,40
+Bloque_netherock
+bounds:44,2,40,40
+Bloque_tierra
+bounds:2,2,40,40
