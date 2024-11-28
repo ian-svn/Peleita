@@ -5,7 +5,10 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -50,16 +53,13 @@ Escenario extends ApplicationAdapter {
     private boolean ganar = false;
     private Sprite fondo;
     private TextureAtlas fondos;
-    private boolean isMenu;
     private Menu menu;
-    private Boolean seguro;
+    private int AuxGanar = 0;
+    //Music musica = Gdx.audio.newMusic(Gdx.files.internal("ruta/a/tu/musica.mp3"));
 
     @Override
     public void create() {
-
-        isMenu = true;
-        seguro = false;
-        menu = new Menu();
+        menu = new Menu(this);
         batch = new SpriteBatch();
         atlas = new TextureAtlas("caballero.atlas");
 
@@ -68,6 +68,7 @@ Escenario extends ApplicationAdapter {
         fondo.setBounds(0, 0, ANCHO, ALTO);
 
         font = new BitmapFont(); // Usa la fuente predeterminada
+        font.setColor(Color.WHITE);
         fontTitulo = new BitmapFont(); // Usa la fuente predeterminada
         font.setColor(Color.WHITE);
 
@@ -81,46 +82,56 @@ Escenario extends ApplicationAdapter {
         habitaciones = piso.getHabitaciones();
     }
 
+    public void darOrden(){
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+        nivelActual = 0;
+        luchador = new Luchador(ANCHO/2-Luchador.ANCHO/2, ALTO/2-Luchador.ALTO/2, null);
+        piso = new Piso(nivelActual, luchador,this);
+        cargarNivel();
+        luchador.setPiso(piso);
+        habitaciones = piso.getHabitaciones();
+        luchador.setNombre(menu.getNombreLuchador());
+        agregarLineaARanking("Jugador: " + luchador.getNombre() + " Tiempo: " + luchador.getElapsedTime());
+    }
+
     @Override
     public void render() {
         // Limpiar la pantalla antes de dibujar
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        batch.begin();
-        isMenu = menu.isActivo();
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)&&!isMenu){
-            seguro=true;
-            menu.setSeguro(true);
-        } else if(seguro){
-            if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)&&!isMenu){
-                seguro = false;
-                menu.setSeguro(false);
-            } else if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)&&!isMenu){
-                seguro = false;
-                menu.setSeguro(false);
-                isMenu = true;
-                menu.setActivo(true);
-            }
-        } else if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)&&isMenu){
-            System.exit(0);
+        if(!menu.getRanking()) {
+            ScreenUtils.clear(0.7f, 0.2f, 0.2f, 0.5f);
+        } else {
+            ScreenUtils.clear(0.1f, 0.1f, 0f, 0.5f);
         }
-        if(!isMenu) {
-            batch.draw(fondo, 0, 0, ANCHO, ALTO);
-            if (Gdx.input.isKeyPressed(Input.Keys.TAB)) {
-                font.draw(batch, "Vida Máxima: " + luchador.getVidasMax(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3);
-                font.draw(batch, "Daño: " + luchador.getEspada().getDanio(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40);
-                font.draw(batch, "Cadencia: " + luchador.getEspada().getCadencia(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 2);
-                font.draw(batch, "Daño: " + luchador.getEspada().getDanio(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 3);
-                font.draw(batch, "Velocidad: " + luchador.getVelocidad(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 4);
+        batch.begin();
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && !menu.isActivo()){
+            menu.setSeguro(true);
+        } else if(menu.isSeguro()){
+            if(Gdx.input.isKeyJustPressed(Input.Keys.Y)){ // Changed to isKeyPressed
+                menu.setSeguro(false);
+                menu.setActivo(true);
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.N) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) { // Changed to isKeyPressed
+                menu.setActivo(false);
+                menu.setSeguro(false);
             }
+        }
+
+        if(!menu.isActivo() && !menu.isSeguro()) {
+            batch.draw(fondo, 0, 0, ANCHO, ALTO);
+
+            //System.out.println("seguro: " + menu.isSeguro() + " activo: " + menu.isActivo());
 
             piso.paint(batch);
             if (!ganar) {
                 luchador.paint(batch);
+                int AuxGanar = 0;
             } else {
                 fontTitulo.draw(batch, "¡Felicidades, te has ", ANCHO / 6, ALTO / 2 + ALTO / 6);
                 fontTitulo.draw(batch, " convertido en dios!", ANCHO / 6, ALTO / 2);
-                agregarLineaARanking("");
+                if(AuxGanar==0){
+                    agregarLineaARanking("Jugador: " + luchador.getNombre() + " Tiempo: " + luchador.getElapsedTime());
+                    AuxGanar = 1;
+                }
             }
 
             //drawRectangle(batch,luchador.getBoundsGrande(), spriteRect);
@@ -132,6 +143,16 @@ Escenario extends ApplicationAdapter {
 
             piso.paintMapa(batch);
 
+            font.draw(batch, "Tiempo: " + redondearFloat(luchador.getElapsedTime(), 1), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3);
+
+            if (Gdx.input.isKeyPressed(Input.Keys.TAB)) {
+                font.draw(batch, "Nombre: " + luchador.getNombre(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40);
+                font.draw(batch, "Vida Máxima: " + luchador.getVidasMax(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40*2);
+                font.draw(batch, "Daño: " + luchador.getEspada().getDanio(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 3);
+                font.draw(batch, "Cadencia: " + luchador.getEspada().getCadencia(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 4);
+                font.draw(batch, "Daño: " + luchador.getEspada().getDanio(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 5);
+                font.draw(batch, "Velocidad: " + luchador.getVelocidad(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 6);
+            }
             // isJuegoPasado(batch);
 
         }
@@ -153,30 +174,19 @@ Escenario extends ApplicationAdapter {
     }
 
     public void agregarLineaARanking(String nuevaLinea) {
+        String rutaArchivo = "assets/Ranking.txt";
         try {
-            File carpetaRanking = new File("Ranking");
+            FileWriter writer = new FileWriter(rutaArchivo, true);
+            BufferedWriter bufferedWriter = new BufferedWriter(writer);
 
-            if (!carpetaRanking.exists()) {
-                carpetaRanking.mkdirs();
-                System.out.println("Carpeta 'Ranking' creada.");
-            }
+            bufferedWriter.write(nuevaLinea);
+            bufferedWriter.newLine();
 
-            File archivo = new File(carpetaRanking, "ranking.txt");
-
-            FileWriter fw = new FileWriter(archivo, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-
-            bw.write(nuevaLinea);
-            bw.newLine();
-
-            bw.close();
-            fw.close();
-
-            System.out.println("Línea agregada al archivo 'ranking.txt'.");
-
+            bufferedWriter.close();
+            writer.close();
+            //System.out.println("Línea agregada correctamente: " + nuevaLinea);
         } catch (IOException e) {
-            System.err.println("Error al escribir en el archivo: " + e.getMessage());
-            e.printStackTrace();
+            //System.err.println("Error al escribir en el archivo: " + e.getMessage());
         }
     }
 /*
@@ -213,10 +223,10 @@ Escenario extends ApplicationAdapter {
         batch.draw(sprite, rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
     }
 
-    /*public static float redondearFloat(float numero, int decimales) {
+    public static float redondearFloat(float numero, int decimales) {
         float factor = (float) Math.pow(10, decimales);
         return Math.round(numero * factor) / factor;
-    }*/
+    }
 
 
 

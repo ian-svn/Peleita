@@ -46,8 +46,8 @@ public class Piso {
         habsMapa = new ArrayList<>();
         habitaciones = new ArrayList<>();
         inicializadDN();
-        numHabs = rand.nextInt(4) + 2;
-        //numHabs = rand.nextInt(4) + 1; // 15
+        numHabs = rand.nextInt(4) + 1;
+        //numHabs = rand.nextInt(4) + 15; // 15
 
         do{
             int numPasHab = rand.nextInt(5) + 2;
@@ -320,10 +320,9 @@ public class Piso {
             }
         }
 
-        for (Habitacion hab : habitaciones) {
-            System.out.println(hab.getHabAdys().size() + " " + hab.getTipoHabitacion());
-
-        }
+        //for (Habitacion hab : habitaciones) {
+        //    System.out.println(hab.getHabAdys().size() + " " + hab.getTipoHabitacion());
+        //}
 
     }
 
@@ -341,21 +340,25 @@ public class Piso {
 
     public static void luchadorArriba(){
         luchador.setY(Habitacion.BORDE_PARED/2 + Habitacion.BORDE_PARED/5 + luchador.getALTO());
+        luchador.setX((Mapa.DIM_X * Bloque.ANCHO) + Bloque.ANCHO * 1.7f);
         posY_Luchador--;
     }
 
     public static void luchadorAbajo(){
         luchador.setY((Mapa.DIM_X * Habitacion.CASILLA) + Bloque.ALTO*4 + Habitacion.BORDE_PARED - luchador.getALTO()*1.5f);
+        luchador.setX((Mapa.DIM_X * Bloque.ANCHO) + Bloque.ANCHO * 1.7f);
         posY_Luchador++;
     }
 
     public static void luchadorDerecha(){
         luchador.setX(0F + Habitacion.BORDE_PARED + luchador.getANCHO());
+        luchador.setY((Mapa.DIM_X * Habitacion.CASILLA) / 2 + Habitacion.CASILLA*2.5F);
         posX_Luchador++;
     }
 
     public static void luchadorIzquierda(){
         luchador.setX((Mapa.DIM_X * Habitacion.CASILLA) * 2.125f - luchador.getANCHO());
+        luchador.setY((Mapa.DIM_X * Habitacion.CASILLA) / 2 + Habitacion.CASILLA*2.5F);
         posX_Luchador--;
     }
 

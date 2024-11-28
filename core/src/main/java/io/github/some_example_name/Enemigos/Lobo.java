@@ -39,7 +39,7 @@ public class Lobo extends Enemigo {
         ALTO = 90F;
         velocidadX = 0F;
         velocidadY = 0F;
-        vida=65F;
+        vida=75F;
         daniado = false;
         isPlacaje = false;
     }

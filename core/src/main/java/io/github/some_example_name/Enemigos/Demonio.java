@@ -46,7 +46,7 @@ public class Demonio extends Enemigo {
         setY(y);
         setANCHO(60F);
         setALTO(80F);
-        vida=25F;
+        vida=50F;
         this.luchador = luchador;
         inicializarFrames();
         velocidadX=0F;

@@ -37,7 +37,7 @@ public class Leon extends Enemigo {
         ALTO = 90F;
         velocidadX = 0F;
         velocidadY = 0F;
-        vida=65F;
+        vida=45F;
         daniado = false;
         isPlacaje = false;
     }

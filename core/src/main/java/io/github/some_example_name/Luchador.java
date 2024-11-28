@@ -46,10 +46,13 @@ public class Luchador extends Individuo{
     private final Float velocidadInicial = 2.5F;
     private final Float velocidadSprintInicial = 5F;
     private Float vidaInicial = 25F;
-
     private Float velocidad = 2.5f, velocidadAux = velocidad;
     private Float velocidadSprint = 5f;
+
     private String nombre;
+    private int tiempo;
+    private float delta;
+    private float elapsedTime = 0f;
 
     public Luchador(Float x, Float y, Piso piso) {
         super(x, y, piso);
@@ -94,6 +97,11 @@ public class Luchador extends Individuo{
         //batch.draw(spriteRect,getX(), getY(), ANCHO+ANCHO/4, ALTO);
 
         if(vivo) {
+
+            delta = Gdx.graphics.getDeltaTime();
+            elapsedTime += delta;
+
+
             cambiarFrame();
             if (ultimoLado != 3) {
                 espada.paint(batch);

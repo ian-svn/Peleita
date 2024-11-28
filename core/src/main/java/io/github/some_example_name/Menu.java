@@ -1,113 +1,213 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import io.github.some_example_name.mapas.Piso;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.PriorityQueue;
 
 @Getter
 @Setter
 public class Menu {
-    private final Float ANCHO = Escenario.ANCHO;
-    private final Float ALTO = Escenario.ALTO;
-    private Texture sprite;
+    private final float ANCHO = Escenario.ANCHO;
+    private final float ALTO = Escenario.ALTO;
     private boolean activo;
     private boolean seguro;
     private Stage stage;
     private ImageButton botonInicio;
-    private Texture botonInicioSprite;
     private ImageButton botonRanking;
-    private Texture botonRankingSprite;
     private ImageButton botonCerrar;
-    private Texture botonCerrarSprite;
     private TextureAtlas atlas;
-    private ImageButton seguroMenu;
     private Texture texturaSeguro;
+    private Texture texturaRanking;
+    private Sprite spriteRanking;
+    private Sprite menuSprite;
+    private Escenario escenario;
+    private String nombreLuchador;
+    private Boolean ranking;
+    private BitmapFont font;
 
-    public Menu(){
-        sprite = new Texture("Menu.jpg");
+    public Menu(Escenario escenario) {
+        this.escenario = escenario;
         activo = true;
         seguro = false;
+        ranking = false;
+        atlas = new TextureAtlas("Menus/MenuBotones.atlas");
 
-        texturaSeguro = new Texture("Menu/botonInicio.png");
-        seguroMenu = new ImageButton(new TextureRegionDrawable(texturaSeguro));
-        seguroMenu.setPosition(ANCHO / 6 - 200 / 2, ALTO/3*2 - ALTO / 5*2); // Posiciona el botón
+        texturaSeguro = new Texture("Menu/MenuSeguro.png");
 
+        texturaRanking = new Texture("Menu/MenuRanking.png");
+        spriteRanking = new Sprite(texturaRanking);
+        spriteRanking.setBounds(ANCHO/2 - (texturaRanking.getWidth()* 1.5f)/2, ALTO/2 - (texturaRanking.getHeight()* 1.5f)/2, texturaRanking.getWidth() * 1.5f, texturaRanking.getHeight() * 1.5f);
+
+
+        font = new BitmapFont(); // Usa la fuente predeterminada
+        font.setColor(Color.WHITE);
 
         stage = new Stage();
-        Gdx.input.setInputProcessor(stage); // El Stage maneja los inputs
-        // Crea el Stage
+        Gdx.input.setInputProcessor(stage);
 
-        // Crea el botón de inicio (usando una imagen como ejemplo)
-        botonInicioSprite = new Texture("Menu/botonInicio.png");
-        botonInicio = new ImageButton(new TextureRegionDrawable(botonInicioSprite));
-        botonInicio.setPosition(ANCHO / 6 - botonInicio.getWidth() / 2, ALTO/3*2 - ALTO / 5); // Posiciona el botón
-        //300 x 125
+        Texture menu = new Texture("Menu.jpg");
+        menuSprite = new Sprite(menu);
+        menuSprite.setSize(ANCHO, ALTO);
+        menuSprite.setColor(1, 1, 1, 0.6f);
 
-        botonRankingSprite = new Texture("Menu/botonRanking.png");
-        botonRanking = new ImageButton(new TextureRegionDrawable(botonRankingSprite));
-        botonRanking.setPosition(ANCHO / 6 - botonRanking.getWidth() / 2, ALTO/3*2 - ALTO / 5*2); // Posiciona el botón
+        // Crea el botón de inicio
+        botonInicio = new ImageButton(new TextureRegionDrawable(atlas.findRegion("JugarNormal")));
+        botonInicio.setPosition(ANCHO / 6 - botonInicio.getWidth() / 2, ALTO / 3 * 2 - ALTO / 5);
 
-        botonCerrarSprite = new Texture("Menu/botonSalir.png");
-        botonCerrar = new ImageButton(new TextureRegionDrawable(botonCerrarSprite));
-        botonCerrar.setPosition(ANCHO / 6 - botonCerrar.getWidth() / 2, ALTO/3*2  - ALTO / 5*3); // Posiciona el botón
+        botonRanking = new ImageButton(new TextureRegionDrawable(atlas.findRegion("RankingNormal")));
+        botonRanking.setPosition(ANCHO / 6 - botonRanking.getWidth() / 2, ALTO / 3 * 2 - ALTO / 5 * 2);
 
-        // Agrega un ClickListener al botón
+        botonCerrar = new ImageButton(new TextureRegionDrawable(atlas.findRegion("SalirNormal")));
+        botonCerrar.setPosition(ANCHO / 6 - botonCerrar.getWidth() / 2, ALTO / 3 * 2 - ALTO / 5 * 3);
+
+        // Agrega listeners a los botones
+        addHoverListener(botonInicio, "JugarNormal", "JugarHover");
         botonInicio.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                activo=false;
-            }
-        });
+                if(activo && !ranking) {
+                    activo = false;
+                    JOptionPane JOptionPane = null;
+                    nombreLuchador = "";
+                    nombreLuchador = JOptionPane.showInputDialog(null, "Por favor, introduce tu nombre:", "Introduce tu nombre", JOptionPane.QUESTION_MESSAGE);
 
-        botonRanking.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                String nombreArchivo = "miArchivo.txt"; // Reemplaza con la ruta de tu archivo
+                    if (nombreLuchador.isEmpty() || nombreLuchador==null) {
+                        nombreLuchador = "Incognito";
+                    }
 
-                try {
-                    String contenido = new String(Files.readAllBytes(Paths.get(nombreArchivo)));
-                    System.out.println(contenido); // Procesa el contenido del archivo
-                } catch (IOException e) {
-
+                    escenario.darOrden();
                 }
             }
         });
 
+        addHoverListener(botonRanking, "RankingNormal", "RankingHover");
+        botonRanking.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                //mostrarRanking();
+                ranking = true;
+            }
+        });
+
+        addHoverListener(botonCerrar, "SalirNormal", "SalirHover");
         botonCerrar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.exit(0);
+                if(activo && !ranking) {
+                    Gdx.app.exit(); // Usar Gdx.app.exit() en lugar de System.exit()
+                }
             }
         });
 
         stage.addActor(botonInicio);
         stage.addActor(botonRanking);
         stage.addActor(botonCerrar);
-
     }
 
-    public void paint(SpriteBatch batch){
-        if(seguro) {
-            batch.draw(texturaSeguro, ANCHO / 2 - texturaSeguro.getWidth() / 2, ALTO / 2 - texturaSeguro.getHeight() / 2, 200, 150);
-        } else if(activo) {
-            batch.draw(sprite, 0, 0, ANCHO, ALTO);
+    // Helper method to add hover listeners
+    private void addHoverListener(ImageButton button, String normalRegion, String hoverRegion) {
+        button.addListener(new InputListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                button.getStyle().imageUp = new TextureRegionDrawable(atlas.findRegion(hoverRegion));
+                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                button.getStyle().imageUp = new TextureRegionDrawable(atlas.findRegion(normalRegion));
+                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+            }
+        });
+    }
+
+    public void paint(SpriteBatch batch) {
+        if (activo && !ranking) {
             stage.act(Gdx.graphics.getDeltaTime());
-            botonInicio.draw(batch, 1);
-            stage.draw();
+            stage.draw(); // Dibuja todos los actores del stage (botones) DESPUÉS
+        }
+
+        if (seguro) {
+            batch.draw(texturaSeguro, ANCHO / 2 - texturaSeguro.getWidth() / 2, ALTO / 2 - texturaSeguro.getHeight() / 2);
+        } else if(ranking&&activo) {
+            Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+            spriteRanking.draw(batch); // esta linea
+            mostrarRanking(batch);
+            if(Gdx.input.isKeyJustPressed(Input.Keys.N)){
+                ranking = false;
+            }
+        } else if (activo) {
+            menuSprite.draw(batch);
         }
     }
 
-    // ... (resto del código)
+    private void mostrarRanking(SpriteBatch batch) {
+        String rutaArchivo = "assets/Ranking.txt";
+        List<String> mejoresTiempos = obtenerMejoresTiempos(rutaArchivo, 10);
+        int aux = 0;
+
+        for (String linea : mejoresTiempos) {
+            aux++;
+            font.draw( batch, linea, 500f, 600f-aux*30f);
+            System.out.println(linea);
+        }
+    }
+
+    public static List<String> obtenerMejoresTiempos(String rutaArchivo, int limite) {
+        PriorityQueue<String> colaPrioridad = new PriorityQueue<>(Comparator.comparingDouble(Menu::extraerTiempo));
+
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(rutaArchivo))) {
+            String linea;
+
+            // Leer línea por línea
+            while ((linea = bufferedReader.readLine()) != null) {
+                colaPrioridad.offer(linea);
+                // Mantener la cola con un tamaño máximo del límite
+                if (colaPrioridad.size() > limite) {
+                    colaPrioridad.poll(); // Elimina el mayor (deja los menores)
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error al leer el archivo: " + e.getMessage());
+        }
+
+        // Convertir la cola a lista y ordenarla
+        List<String> resultado = new ArrayList<>(colaPrioridad);
+        resultado.sort(Comparator.comparingDouble(Menu::extraerTiempo));
+        return resultado;
+    }
+
+    // Método auxiliar para extraer el tiempo de una línea
+    private static double extraerTiempo(String linea) {
+        try {
+            // Suponiendo que la línea tiene el formato: "Jugador: Nombre Tiempo: XX.XX"
+            String[] partes = linea.split("Tiempo: ");
+            return Double.parseDouble(partes[1].trim());
+        } catch (Exception e) {
+            // Si la línea no tiene el formato esperado, se considera un tiempo muy alto
+            return Double.MAX_VALUE;
+        }
+    }
 }
