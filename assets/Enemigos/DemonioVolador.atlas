@@ -1,0 +1,13 @@
+DemonioVolador.png
+size:512,128
+repeat:none
+demonioVolador1
+bounds:370,2,90,82
+demonioVolador2
+bounds:186,2,90,82
+demonioVolador3
+bounds:2,2,90,82
+demonioVolador4
+bounds:278,2,90,82
+demonioVolador5
+bounds:94,2,90,82

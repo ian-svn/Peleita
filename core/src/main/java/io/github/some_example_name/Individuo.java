@@ -6,6 +6,9 @@ import io.github.some_example_name.mapas.Piso;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 public abstract class Individuo {
@@ -14,11 +17,17 @@ public abstract class Individuo {
     protected TextureAtlas atlas;
     protected Float ANCHO;
     protected Float ALTO;
+    protected Boolean vivo;
     private Float x;
     private Float y;
     private Float velocidadX;
     private Float velocidadY;
     private Piso piso;
+    protected List<TextureRegion> frames;
+    protected int frameIndex;
+    protected TextureRegion frameActual;
+    protected final int countCambio = 8;
+    protected int countCambioAux = countCambio;
 
     public Individuo(Float x, Float y, Piso piso){
         this.x = x;
@@ -26,6 +35,8 @@ public abstract class Individuo {
         this.velocidadX=0f;
         this.velocidadY=0f;
         this.piso = piso;
+        vivo = true;
+        frames = new ArrayList<>();
     }
 
     public abstract void paint(SpriteBatch batch);

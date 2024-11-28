@@ -49,6 +49,7 @@ public class Luchador extends Individuo{
 
     private Float velocidad = 2.5f, velocidadAux = velocidad;
     private Float velocidadSprint = 5f;
+    private String nombre;
 
     public Luchador(Float x, Float y, Piso piso) {
         super(x, y, piso);
@@ -309,8 +310,10 @@ public class Luchador extends Individuo{
     }
 
     public void daniar(){
-        daniado=true;
-        vidas--;
+        if(!daniado){
+            daniado=true;
+            vidas--;
+        }
     }
 
     public void actualizarStats(){

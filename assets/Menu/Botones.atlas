@@ -1,0 +1,9 @@
+botones.png
+size:1024,256
+repeat:none
+Inicio
+bounds:2,2,300,125
+Ranking
+bounds:304,129,300,125
+Salir
+bounds:2,129,300,125

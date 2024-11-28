@@ -21,6 +21,7 @@ public abstract class Enemigo extends Individuo {
     private Luchador luchador;
     private Piso piso;
     private Boolean vivo = true;
+    protected Float vida;
 
     public Enemigo(Float x, Float y, Luchador luchador, Piso piso) {
         super(x, y, piso);
@@ -29,14 +30,10 @@ public abstract class Enemigo extends Individuo {
     }
 
     @Override
-    public void paint(SpriteBatch batch) {
-        batch.draw(sprite, getX(), getY(), getANCHO(), getALTO());
-    }
+    public abstract void paint(SpriteBatch batch);
 
     @Override
-    public void moverse() {
-
-    }
+    public abstract void moverse();
 
 
 }

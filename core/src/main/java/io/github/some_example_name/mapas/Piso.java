@@ -46,7 +46,7 @@ public class Piso {
         habsMapa = new ArrayList<>();
         habitaciones = new ArrayList<>();
         inicializadDN();
-        numHabs = rand.nextInt(4) + 7;
+        numHabs = rand.nextInt(4) + 2;
         //numHabs = rand.nextInt(4) + 1; // 15
 
         do{
@@ -197,7 +197,7 @@ public class Piso {
 
     public void crearMapa(){
         Float inicioX = getDimX() * Bloque.ANCHO + Bloque.ANCHO * 11;
-        Float inicioY = getDimY() * Bloque.ALTO * 2 - Bloque.ALTO*2;
+        Float inicioY = getDimY() * Bloque.ALTO * 2;
 
         for(int y=0; y<getDimY(); y++){
             for(int x=0; x<getDimX(); x++){
@@ -373,6 +373,7 @@ public class Piso {
     public void miniResetCouldown(){
         countPassHabAux = countPassHab/4;
     }
+
 
 }
 

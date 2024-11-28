@@ -28,7 +28,6 @@ public class Demonio extends Enemigo {
     private int countCambio=8, countCambioAux=countCambio;
     private int countDaniado=15, countDaniadoAux=countDaniado;
     private int frameIndex=0;
-    private Boolean vivo;
     private Boolean daniado;
     private Boolean daniandose;
     private int ultimoLadoAux;
@@ -38,9 +37,11 @@ public class Demonio extends Enemigo {
     private boolean aba = false;
     private boolean izq = false;
     private boolean der = false;
+    private Float velocidad;
 
     public Demonio(Float x, Float y, Luchador luchador, Piso piso){
         super(x, y, luchador, piso);
+        atlas = new TextureAtlas("Angeles.atlas");
         setX(x);
         setY(y);
         setANCHO(60F);
@@ -50,18 +51,19 @@ public class Demonio extends Enemigo {
         inicializarFrames();
         velocidadX=0F;
         velocidadY=0F;
+        velocidad = 2F;
         daniado = false;
         daniandose = false;
         frameActual = frames.get(0);
-        this.vivo = true;
+        setVivo(true);
         this.piso = piso;
-        setAtlas(new TextureAtlas("Enemigos/Demonio.atlas"));
-        setSprite(getAtlas().createSprite("Demonio"));
+        //setAtlas(new TextureAtlas("Enemigos/Demonio.atlas"));
+        //setSprite(getAtlas().createSprite("Demonio"));
     }
 
     @Override
     public void paint(SpriteBatch batch) {
-        if(vivo) {
+        if(getVivo()) {
             if (velocidadX > 0f) {
                 if(daniado){
                     batch.setColor(Color.valueOf("ff4a4a"));
@@ -84,9 +86,11 @@ public class Demonio extends Enemigo {
     @Override
     public void moverse() {
         if (vida <= 0) {
-            vivo = false;
+            setVivo(false);
         }
-        if(vivo&&!choqueBloque) {
+        setX(getX() + velocidadX);
+        setY(getY() + velocidadY);
+        if(getVivo()&&!choqueBloque) {
 
             if (daniado) {
                 countDaniadoAux--;
@@ -102,11 +106,16 @@ public class Demonio extends Enemigo {
                     daniado = false;
                 }
             } else if (!daniado) {
-                float disX = (getX()>luchador.getX()) ? getX()-luchador.getX() : luchador.getX()-getX();
-                float disY = (getY()>luchador.getY()) ? getY()-luchador.getY() : luchador.getY()-getY();
+                float dirX = getLuchador().getX() - getX();
+                float dirY = getLuchador().getY() - getY();
 
-                velocidadX = (luchador.getX() >= getX()) ? disX/100 : -disX/100;
-                velocidadY = (luchador.getY() >= getY()) ? disY/100 : -disY/100;
+                float magnitud = (float) Math.sqrt(dirX * dirX + dirY * dirY);
+
+                dirX /= magnitud;
+                dirY /= magnitud;
+
+                velocidadX = dirX * velocidad;
+                velocidadY = dirY * velocidad;
 
                 countCambioAux--;
                 if (countCambioAux <= 0) {
@@ -121,7 +130,7 @@ public class Demonio extends Enemigo {
                 ultimoLadoAux=luchador.getUltimoLado();
             }
 
-        } else if(vivo&&choqueBloque){
+        } else if(getVivo()&&choqueBloque){
             if (daniado) {
                 countDaniadoAux--;
                 if (countDaniadoAux <= 0) {
@@ -143,8 +152,6 @@ public class Demonio extends Enemigo {
                 velocidadX=2F;
             }
         }
-        setX(getX() + velocidadX);
-        setY(getY() + velocidadY);
     }
 
     public void inicializarFrames(){
@@ -155,21 +162,21 @@ public class Demonio extends Enemigo {
     }
 
     public void colisionar(){
-        if(!daniado&&vivo) {
+        if(!daniado&&getVivo()) {
             Rectangle reactEspada = luchador.getEspada().getBounds();
             if (reactEspada.overlaps(getBounds())&&luchador.getEspada().isZarpazo()) {
                 daniar();
                 vida -= luchador.getEspada().getDanio();
             }
         }
-        if(vivo&&luchador.getVivo()){
+        if(getVivo()&&luchador.getVivo()){
             Rectangle reactLuchador = luchador.getBounds();
-            if (reactLuchador.overlaps(getBounds())&&!luchador.getDaniado()) {
+            if (reactLuchador.overlaps(getBounds())) {
                 luchador.daniar();
             }
         }
 
-        if(vivo){
+        if(getVivo()){
             boolean aux = true;
             for(Bloque bloque : piso.buscarHab().getBloques()) {
                 if(bloque.getBounds().overlaps(getBoundsGrande())){
@@ -186,7 +193,7 @@ public class Demonio extends Enemigo {
             }
         }
 
-        if(vivo&&choqueBloque){
+        if(getVivo()&&choqueBloque){
             for(Bloque bloque : piso.buscarHab().getBloques()){
 
                 Rectangle reactBloque = bloque.getBounds();

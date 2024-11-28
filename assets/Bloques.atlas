@@ -1,9 +1,9 @@
 Bloques.png
-size:128,64
+size:256,64
 repeat:none
 Bloque_cielo
-bounds:86,2,40,40
-Bloque_netherock
-bounds:44,2,40,40
+bounds:98,2,46,47
+Bloque_infierno
+bounds:50,2,46,47
 Bloque_tierra
-bounds:2,2,40,40
+bounds:2,2,46,47

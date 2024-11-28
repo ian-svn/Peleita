@@ -37,7 +37,7 @@ public class Bloque {
         } else if(tipoBloque==TIERRA){
             sprite = atlas.createSprite("Bloque_tierra");
         } else if(tipoBloque==INFIERNO){
-            sprite = atlas.createSprite("Bloque_netherock");
+            sprite = atlas.createSprite("Bloque_infierno");
         }
         sprite.setBounds(x, y, ANCHO, ALTO);
     }

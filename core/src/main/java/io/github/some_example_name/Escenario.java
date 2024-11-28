@@ -4,6 +4,7 @@ package io.github.some_example_name;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -16,6 +17,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.w3c.dom.Text;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,11 +50,16 @@ Escenario extends ApplicationAdapter {
     private boolean ganar = false;
     private Sprite fondo;
     private TextureAtlas fondos;
-    private boolean menu;
+    private boolean isMenu;
+    private Menu menu;
+    private Boolean seguro;
 
     @Override
     public void create() {
-        menu = true;
+
+        isMenu = true;
+        seguro = false;
+        menu = new Menu();
         batch = new SpriteBatch();
         atlas = new TextureAtlas("caballero.atlas");
 
@@ -76,29 +86,56 @@ Escenario extends ApplicationAdapter {
         // Limpiar la pantalla antes de dibujar
         ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         batch.begin();
+        isMenu = menu.isActivo();
 
-
-        // Comenzar a dibujar
-        batch.draw(fondo,0, 0, ANCHO, ALTO);
-
-        piso.paint(batch);
-        if(!ganar) {
-            luchador.paint(batch); // Dibujar al luchador
-        } else {
-            fontTitulo.draw(batch, "¡Felicidades, te has ", ANCHO/6, ALTO/2+ALTO/6);
-            fontTitulo.draw(batch, " convertido en dios!", ANCHO/6, ALTO/2);
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)&&!isMenu){
+            seguro=true;
+            menu.setSeguro(true);
+        } else if(seguro){
+            if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)&&!isMenu){
+                seguro = false;
+                menu.setSeguro(false);
+            } else if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)&&!isMenu){
+                seguro = false;
+                menu.setSeguro(false);
+                isMenu = true;
+                menu.setActivo(true);
+            }
+        } else if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)&&isMenu){
+            System.exit(0);
         }
+        if(!isMenu) {
+            batch.draw(fondo, 0, 0, ANCHO, ALTO);
+            if (Gdx.input.isKeyPressed(Input.Keys.TAB)) {
+                font.draw(batch, "Vida Máxima: " + luchador.getVidasMax(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3);
+                font.draw(batch, "Daño: " + luchador.getEspada().getDanio(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40);
+                font.draw(batch, "Cadencia: " + luchador.getEspada().getCadencia(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 2);
+                font.draw(batch, "Daño: " + luchador.getEspada().getDanio(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 3);
+                font.draw(batch, "Velocidad: " + luchador.getVelocidad(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 4);
+            }
 
-        //drawRectangle(batch,luchador.getBoundsGrande(), spriteRect);
+            piso.paint(batch);
+            if (!ganar) {
+                luchador.paint(batch);
+            } else {
+                fontTitulo.draw(batch, "¡Felicidades, te has ", ANCHO / 6, ALTO / 2 + ALTO / 6);
+                fontTitulo.draw(batch, " convertido en dios!", ANCHO / 6, ALTO / 2);
+                agregarLineaARanking("");
+            }
 
-        font.draw(batch, " Nivel: " + nivelActual, 20, 20);
-        font.draw(batch, " Vidas: " + luchador.getVidas(), 80, ALTO - 20);
+            //drawRectangle(batch,luchador.getBoundsGrande(), spriteRect);
 
-        //System.out.println("posx: " + posX_Luchador + " posy: " + posY_Luchador);
+            font.draw(batch, " Nivel: " + nivelActual, 20, 20);
+            font.draw(batch, " Vidas: " + luchador.getVidas(), 80, ALTO - 20);
 
-        piso.paintMapa(batch);
+            //System.out.println("posx: " + posX_Luchador + " posy: " + posY_Luchador);
 
-        // isJuegoPasado(batch);
+            piso.paintMapa(batch);
+
+            // isJuegoPasado(batch);
+
+        }
+        menu.paint(batch);
 
         batch.end();
     }
@@ -113,6 +150,34 @@ Escenario extends ApplicationAdapter {
         piso = new Piso(nivelActual, luchador,this);
         luchador.setPiso(piso);
         habitaciones = piso.getHabitaciones();
+    }
+
+    public void agregarLineaARanking(String nuevaLinea) {
+        try {
+            File carpetaRanking = new File("Ranking");
+
+            if (!carpetaRanking.exists()) {
+                carpetaRanking.mkdirs();
+                System.out.println("Carpeta 'Ranking' creada.");
+            }
+
+            File archivo = new File(carpetaRanking, "ranking.txt");
+
+            FileWriter fw = new FileWriter(archivo, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            bw.write(nuevaLinea);
+            bw.newLine();
+
+            bw.close();
+            fw.close();
+
+            System.out.println("Línea agregada al archivo 'ranking.txt'.");
+
+        } catch (IOException e) {
+            System.err.println("Error al escribir en el archivo: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 /*
     public void isJuegoPasado(SpriteBatch batch){
@@ -152,6 +217,8 @@ Escenario extends ApplicationAdapter {
         float factor = (float) Math.pow(10, decimales);
         return Math.round(numero * factor) / factor;
     }*/
+
+
 
 }
 

@@ -2,6 +2,7 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import io.github.some_example_name.Enemigos.Demonio;
+import io.github.some_example_name.Enemigos.Leon;
 import io.github.some_example_name.Enemigos.Lobo;
 import io.github.some_example_name.mapas.ETipoHabitacion;
 import io.github.some_example_name.mapas.Mapa;
@@ -75,7 +76,7 @@ public class Habitacion {
                 } else if(mapa.obtenerNivel()[y][x] == 'E'){
                     enemigos.add(new Demonio(posicionX, posicionY, luchador, piso));
                 }  else if(mapa.obtenerNivel()[y][x] == 'P'){
-                    enemigos.add(new Demonio(posicionX, posicionY, luchador, piso));
+                    enemigos.add(new Leon(posicionX, posicionY, luchador, piso));
                 } else if(mapa.obtenerNivel()[y][x] == 'I'){
                     pedestal = new Pedestal(posicionX, posicionY, luchador);
                 } else if(mapa.obtenerNivel()[y][x] == 'L') {
