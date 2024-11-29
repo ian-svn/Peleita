@@ -10,7 +10,7 @@ import lombok.Getter;
 public class Frasco extends ObjetoPasivo {
     private Float danioExtra = 0F;
     private Float vidaExtra = 0F;
-    private int cadenciaExtra = 10;
+    private int cadenciaExtra = 8;
     private Float velocidadExtra = 0F;
     public Frasco(Float x, Float y) {
         super(x, y);

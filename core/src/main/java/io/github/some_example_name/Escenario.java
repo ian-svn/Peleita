@@ -55,7 +55,7 @@ Escenario extends ApplicationAdapter {
     private TextureAtlas fondos;
     private Menu menu;
     private int AuxGanar = 0;
-    //Music musica = Gdx.audio.newMusic(Gdx.files.internal("ruta/a/tu/musica.mp3"));
+    //private Music musicaFondo = Gdx.audio.newMusic(FileHandle.tempFile("assets/audio/cancionVideojuego.mp3"));
 
     @Override
     public void create() {
@@ -71,7 +71,6 @@ Escenario extends ApplicationAdapter {
         font.setColor(Color.WHITE);
         fontTitulo = new BitmapFont(); // Usa la fuente predeterminada
         font.setColor(Color.WHITE);
-
         fontTitulo.getData().setScale(6f);
         fontTitulo.setColor(Color.OLIVE);
         //spriteRect = new Texture("assets/white.png");
@@ -92,6 +91,7 @@ Escenario extends ApplicationAdapter {
         habitaciones = piso.getHabitaciones();
         luchador.setNombre(menu.getNombreLuchador());
         agregarLineaARanking("Jugador: " + luchador.getNombre() + " Tiempo: " + luchador.getElapsedTime());
+        //musicaFondo.play();
     }
 
     @Override
@@ -110,6 +110,7 @@ Escenario extends ApplicationAdapter {
             if(Gdx.input.isKeyJustPressed(Input.Keys.Y)){ // Changed to isKeyPressed
                 menu.setSeguro(false);
                 menu.setActivo(true);
+//                musicaFondo.dispose();
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.N) || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) { // Changed to isKeyPressed
                 menu.setActivo(false);
                 menu.setSeguro(false);
@@ -126,8 +127,8 @@ Escenario extends ApplicationAdapter {
                 luchador.paint(batch);
                 int AuxGanar = 0;
             } else {
-                fontTitulo.draw(batch, "¡Felicidades, te has ", ANCHO / 6, ALTO / 2 + ALTO / 6);
-                fontTitulo.draw(batch, " convertido en dios!", ANCHO / 6, ALTO / 2);
+                //fontTitulo.draw(batch, "¡Felicidades, te has ", ANCHO / 6, ALTO / 2 + ALTO / 6);
+                //fontTitulo.draw(batch, " convertido en dios!", ANCHO / 6, ALTO / 2);
                 if(AuxGanar==0){
                     agregarLineaARanking("Jugador: " + luchador.getNombre() + " Tiempo: " + luchador.getElapsedTime());
                     AuxGanar = 1;
@@ -146,12 +147,20 @@ Escenario extends ApplicationAdapter {
             font.draw(batch, "Tiempo: " + redondearFloat(luchador.getElapsedTime(), 1), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3);
 
             if (Gdx.input.isKeyPressed(Input.Keys.TAB)) {
+                int aux=0;
                 font.draw(batch, "Nombre: " + luchador.getNombre(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40);
                 font.draw(batch, "Vida Máxima: " + luchador.getVidasMax(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40*2);
                 font.draw(batch, "Daño: " + luchador.getEspada().getDanio(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 3);
                 font.draw(batch, "Cadencia: " + luchador.getEspada().getCadencia(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 4);
                 font.draw(batch, "Daño: " + luchador.getEspada().getDanio(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 5);
                 font.draw(batch, "Velocidad: " + luchador.getVelocidad(), ANCHO / 2 + ANCHO / 3, ALTO - ALTO / 3 - ALTO / 40 * 6);
+
+                batch.setColor(new Color(1, 1, 1, 0.5f));
+                for(ObjetoPasivo obj : getLuchador().getObjetos()){
+                    aux++;
+                    batch.draw(obj.getSprite(), 50f, ALTO - ALTO / 3 - ALTO / 40 * aux, obj.getANCHO(), obj.getALTO());
+                }
+                batch.setColor(Color.WHITE);
             }
             // isJuegoPasado(batch);
 

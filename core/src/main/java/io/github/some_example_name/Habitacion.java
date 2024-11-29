@@ -1,9 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import io.github.some_example_name.Enemigos.Demonio;
-import io.github.some_example_name.Enemigos.Leon;
-import io.github.some_example_name.Enemigos.Lobo;
+import io.github.some_example_name.Enemigos.*;
 import io.github.some_example_name.mapas.ETipoHabitacion;
 import io.github.some_example_name.mapas.Mapa;
 import io.github.some_example_name.mapas.Piso;
@@ -73,14 +71,38 @@ public class Habitacion {
                 Float posicionY = (DIM_Y - 1 - y) * CASILLA - TAMANIO_PARED*2 - CASILLA;
                 if(mapa.obtenerNivel()[y][x] == 'B'){
                     bloques.add(new Bloque(posicionX, posicionY, tipoBloque));
-                } else if(mapa.obtenerNivel()[y][x] == 'E'){
+                } else if(mapa.obtenerNivel()[y][x] == 'E' && piso.getNivelActual() == 0){
                     enemigos.add(new Demonio(posicionX, posicionY, luchador, piso));
-                }  else if(mapa.obtenerNivel()[y][x] == 'P'){
+
+                } else if(mapa.obtenerNivel()[y][x] == 'E' && piso.getNivelActual() == 1){
+                    enemigos.add(new Cura(posicionX, posicionY, luchador, piso));
+
+                } else if(mapa.obtenerNivel()[y][x] == 'E' && piso.getNivelActual() >= 2){
+                    enemigos.add(new Angel(posicionX, posicionY, luchador, piso));
+                }
+
+                else if(mapa.obtenerNivel()[y][x] == 'P' && piso.getNivelActual() == 0){
                     enemigos.add(new Leon(posicionX, posicionY, luchador, piso));
-                } else if(mapa.obtenerNivel()[y][x] == 'I'){
-                    pedestal = new Pedestal(posicionX, posicionY, luchador);
-                } else if(mapa.obtenerNivel()[y][x] == 'L') {
+                } else if(mapa.obtenerNivel()[y][x] == 'P' && piso.getNivelActual() == 1){
+                    enemigos.add(new Hipogrifo(posicionX, posicionY, luchador, piso));
+                } else if(mapa.obtenerNivel()[y][x] == 'P' && piso.getNivelActual() >= 2){
+                    enemigos.add(new Cura(posicionX, posicionY, luchador, piso));
+                }
+
+
+                else if(mapa.obtenerNivel()[y][x] == 'V' && piso.getNivelActual() == 0) {
+                    enemigos.add(new DemonioVolador(posicionX, posicionY,luchador, piso));
+                } else if(mapa.obtenerNivel()[y][x] == 'L' && piso.getNivelActual() == 1) {
                     enemigos.add(new Lobo(posicionX, posicionY,luchador, piso));
+                } else if(mapa.obtenerNivel()[y][x] == 'V' && piso.getNivelActual() >= 2) {
+                    enemigos.add(new Paloma(posicionX, posicionY,luchador, piso));
+                } else if(mapa.obtenerNivel()[y][x] == 'L'){
+                    enemigos.add(new Cura(posicionX, posicionY, luchador, piso));
+                }
+
+
+                else if(mapa.obtenerNivel()[y][x] == 'I'){
+                    pedestal = new Pedestal(posicionX, posicionY, luchador);
                 }
             }
         }

@@ -15,7 +15,6 @@ public abstract class ObjetoUtilizable extends Objeto{
 
     private Float x;
     private Float y;
-    private List<TextureRegion> frames = new ArrayList<>();
     protected int cadencia;
     protected final int cadenciaInicial;
     protected Float danio;

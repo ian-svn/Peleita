@@ -17,7 +17,7 @@ public class Corona extends ObjetoPasivo {
         danioExtra = 6.25F;
         vidaExtra = 10F;
         cadenciaExtra = 5;
-        velocidadExtra = 0F;
+        velocidadExtra = 5F;
     }
 
     @Override

@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Rectangle;
-import io.github.some_example_name.Objetos.Corona;
-import io.github.some_example_name.Objetos.Frasco;
-import io.github.some_example_name.Objetos.Perla;
-import io.github.some_example_name.Objetos.Piedra;
+import io.github.some_example_name.Objetos.*;
 
 import java.util.Random;
 
@@ -36,7 +33,7 @@ public class Pedestal {
         existente = false;
         objetoTomado = false;
         sprite = new Texture("pedestal.png");
-        numRand = rand.nextInt(4) + 1;
+        numRand = rand.nextInt(10) + 1;
         switch(numRand){
             case 1:
                 objetoPasivo = new Perla(x, y);
@@ -49,6 +46,18 @@ public class Pedestal {
                 break;
             case 4:
                 objetoPasivo = new Piedra(x, y);
+                break;
+            case 5, 8:
+                objetoPasivo = new Copa(x, y);
+                break;
+            case 6:
+                objetoPasivo = new Cruz(x, y);
+                break;
+            case 7:
+                objetoPasivo = new Omega(x, y);
+                break;
+            default:
+                objetoPasivo = new Perla(x, y);
                 break;
         }
     }

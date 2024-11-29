@@ -21,7 +21,7 @@ public class Perla extends ObjetoPasivo {
     }
 
     public void efecto(){
-        // TODO Mas daño, menos vida
+
     }
 
     @Override

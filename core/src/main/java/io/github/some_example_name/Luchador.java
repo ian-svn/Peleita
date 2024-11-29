@@ -36,8 +36,8 @@ public class Luchador extends Individuo{
     private Espada espada;
     private Piso piso;
     boolean arr=true, aba=true, izq=true, der=true;
-    static final Float ANCHO= 80F;
-    static final Float ALTO= 100F;
+    static Float ANCHO= 60F;
+    static Float ALTO= 100F;
     private Texture spriteRect;
 
     int countCambio = 6, countCambioAux = countCambio;
@@ -57,11 +57,11 @@ public class Luchador extends Individuo{
     public Luchador(Float x, Float y, Piso piso) {
         super(x, y, piso);
         choquePuerta = false;
-        this.atlas = new TextureAtlas("assets/caballero.atlas");
+        this.atlas = new TextureAtlas("caballero/lucifer.atlas");
         this.daniado=false;
         this.vivo=true;
         this.vidas = 25F;
-        vidasMax = 25F;
+        vidasMax = 15F;
         this.piso = piso;
         objetos = new ArrayList<>();
 
@@ -261,13 +261,13 @@ public class Luchador extends Individuo{
         if(countCambioAux<=0&&getVelocidadY()!=0){
             countCambioAux=countCambio;
             if (Gdx.input.isKeyPressed(Input.Keys.UP)||Gdx.input.isKeyPressed(Input.Keys.W)) {
-                frameIndex = (frameIndex + 1) % frameArriba.size;  // Avanza al siguiente frame y hace loop
-                frameActual = frameArriba.get(frameIndex);  // Actualiza el frame actual
+                frameIndex = (frameIndex + 1) % frameArriba.size;
+                frameActual = frameArriba.get(frameIndex);
                 return;
             }
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)||Gdx.input.isKeyPressed(Input.Keys.S)) {
-                frameIndex = (frameIndex - 1 + frameAbajo.size) % frameAbajo.size;  // Retrocede al frame anterior
-                frameActual = frameAbajo.get(frameIndex);  // Actualiza el frame actual
+                frameIndex = (frameIndex + 1) % frameArriba.size; ;
+                frameActual = frameAbajo.get(frameIndex);
                 return;
             }
         }
@@ -275,10 +275,7 @@ public class Luchador extends Individuo{
         if(countCambioAux<=0&&getVelocidadX()!=0) {
             countCambioAux=countCambio;
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)||Gdx.input.isKeyPressed(Input.Keys.D)) {
-                frameIndex = (frameIndex + 1) % framesX.size;  // Avanza al siguiente frame y hace loop
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.LEFT)||Gdx.input.isKeyPressed(Input.Keys.A)) {
-                frameIndex = (frameIndex - 1 + framesX.size) % framesX.size;  // Retrocede al frame anterior
+                frameIndex = (frameIndex + 1) % framesX.size;
             }
             frameActual = framesX.get(frameIndex);  // Actualiza el frame actual
         }
@@ -286,12 +283,12 @@ public class Luchador extends Individuo{
 
     public void inicializarFrameX(TextureAtlas atlas){
         framesX = new Array<>();
-        framesX.add(atlas.findRegion("caballeroH1"));
-        framesX.add(atlas.findRegion("caballeroH2"));
-        framesX.add(atlas.findRegion("caballeroH3"));
-        framesX.add(atlas.findRegion("caballeroH4"));
-        framesX.add(atlas.findRegion("caballeroH5"));
-        framesX.add(atlas.findRegion("caballeroH6"));
+        framesX.add(atlas.findRegion("quieto_frame1"));
+        framesX.add(atlas.findRegion("quieto_frame2"));
+        framesX.add(atlas.findRegion("quieto_frame3"));
+        framesX.add(atlas.findRegion("quieto_frame4"));
+        framesX.add(atlas.findRegion("quieto_frame5"));
+        framesX.add(atlas.findRegion("quieto_frame6"));
 
         frameIndex = 0;  // Inicializar en la primera región
         frameActual = framesX.get(frameIndex);  // Obtener la primera región
@@ -299,9 +296,12 @@ public class Luchador extends Individuo{
 
     public void inicializarFrameArriba(TextureAtlas atlas){
         frameArriba = new Array<>();
-        frameArriba.add(atlas.findRegion("caballeroF1"));
-        frameArriba.add(atlas.findRegion("caballeroF2"));
-        frameArriba.add(atlas.findRegion("caballeroF3"));
+        frameArriba.add(atlas.findRegion("atras_frame1"));
+        frameArriba.add(atlas.findRegion("atras_frame2"));
+        frameArriba.add(atlas.findRegion("atras_frame3"));
+        frameArriba.add(atlas.findRegion("atras_frame4"));
+        frameArriba.add(atlas.findRegion("atras_frame6"));
+        frameArriba.add(atlas.findRegion("atras_frame7"));
 
         frameIndex = 0;  // Inicializar en la primera región
         frameActual = frameArriba.get(frameIndex);  // Obtener la primera región
@@ -309,9 +309,14 @@ public class Luchador extends Individuo{
 
     public void inicializarFrameAbajo(TextureAtlas atlas){
         frameAbajo = new Array<>();
-        frameAbajo.add(atlas.findRegion("caballeroB1"));
-        frameAbajo.add(atlas.findRegion("caballeroB2"));
-        frameAbajo.add(atlas.findRegion("caballeroB3"));
+        frameAbajo.add(atlas.findRegion("delante_frame1"));
+        frameAbajo.add(atlas.findRegion("delante_frame2"));
+        frameAbajo.add(atlas.findRegion("delante_frame3"));
+        frameAbajo.add(atlas.findRegion("delante_frame4"));
+        frameAbajo.add(atlas.findRegion("delante_frame5"));
+        frameAbajo.add(atlas.findRegion("delante_frame6"));
+        frameAbajo.add(atlas.findRegion("delante_frame7"));
+        frameAbajo.add(atlas.findRegion("delante_frame8"));
 
         frameIndex = 0;  // Inicializar en la primera región
         frameActual = frameAbajo.get(frameIndex);  // Obtener la primera región
@@ -347,6 +352,10 @@ public class Luchador extends Individuo{
         espada.setCadenciaAux(espada.getCadencia());
 
         System.out.println("danio: " + espada.getDanio() + " cadencia: " + espada.getCadencia() + " vidaMax: " + vidasMax + " velocidad: " + velocidad + " velodicadSprint: " + velocidadSprint);
+    }
+
+    public Rectangle getBoundsPuertas(){
+        return new Rectangle(getX()-getANCHO()/2,getY(),ANCHO*2,ALTO);
     }
 
 }

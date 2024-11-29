@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.PriorityQueue;
+import java.util.PriorityQueue;import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 
 @Getter
 @Setter
@@ -39,26 +41,38 @@ public class Menu {
     private ImageButton botonCerrar;
     private TextureAtlas atlas;
     private Texture texturaSeguro;
-    private Texture texturaRanking;
+    private Texture textureRanking;
+    private Texture textureGanar;
+    private Texture texturePerder;
     private Sprite spriteRanking;
     private Sprite menuSprite;
     private Escenario escenario;
     private String nombreLuchador;
     private Boolean ranking;
+    private Boolean perder;
+    private Boolean ganar;
     private BitmapFont font;
+    private Music musicaDeFondo = Gdx.audio.newMusic(Gdx.files.internal("assets/audio/musicaMenu.mp3"));
 
-    public Menu(Escenario escenario) {
+    public Menu(Escenario escenario){
+        musicaDeFondo.setVolume(0.2F);
+        musicaDeFondo.setLooping(true);
         this.escenario = escenario;
         activo = true;
         seguro = false;
         ranking = false;
+        ganar = false;
+        perder = false;
         atlas = new TextureAtlas("Menus/MenuBotones.atlas");
 
-        texturaSeguro = new Texture("Menu/MenuSeguro.png");
+        textureGanar = new Texture("Menu/MenuGanar.png");
+        texturePerder= new Texture("Menu/MenuPerder.png");
 
-        texturaRanking = new Texture("Menu/MenuRanking.png");
-        spriteRanking = new Sprite(texturaRanking);
-        spriteRanking.setBounds(ANCHO/2 - (texturaRanking.getWidth()* 1.5f)/2, ALTO/2 - (texturaRanking.getHeight()* 1.5f)/2, texturaRanking.getWidth() * 1.5f, texturaRanking.getHeight() * 1.5f);
+        texturaSeguro = new Texture("Menu/MenuSeguro.png");
+        textureRanking = new Texture("Menu/MenuRanking.png");
+
+        spriteRanking = new Sprite(textureRanking);
+        spriteRanking.setBounds(ANCHO/2 - (textureRanking.getWidth()* 1.5f)/2, ALTO/2 - (textureRanking.getHeight()* 1.5f)/2, textureRanking.getWidth() * 1.5f, textureRanking.getHeight() * 1.5f);
 
 
         font = new BitmapFont(); // Usa la fuente predeterminada
@@ -74,13 +88,13 @@ public class Menu {
 
         // Crea el botón de inicio
         botonInicio = new ImageButton(new TextureRegionDrawable(atlas.findRegion("JugarNormal")));
-        botonInicio.setPosition(ANCHO / 6 - botonInicio.getWidth() / 2, ALTO / 3 * 2 - ALTO / 5);
+        botonInicio.setPosition(ANCHO / 6 - botonInicio.getWidth() / 2, ALTO / 3 - 10 - ALTO/20);
 
         botonRanking = new ImageButton(new TextureRegionDrawable(atlas.findRegion("RankingNormal")));
-        botonRanking.setPosition(ANCHO / 6 - botonRanking.getWidth() / 2, ALTO / 3 * 2 - ALTO / 5 * 2);
+        botonRanking.setPosition(ANCHO / 6 - botonRanking.getWidth() / 2, ALTO / 3 - 20 - ALTO/40*7);
 
         botonCerrar = new ImageButton(new TextureRegionDrawable(atlas.findRegion("SalirNormal")));
-        botonCerrar.setPosition(ANCHO / 6 - botonCerrar.getWidth() / 2, ALTO / 3 * 2 - ALTO / 5 * 3);
+        botonCerrar.setPosition(ANCHO / 6 - botonCerrar.getWidth() / 2, ALTO / 3 - 30 - ALTO/20*6);
 
         // Agrega listeners a los botones
         addHoverListener(botonInicio, "JugarNormal", "JugarHover");
@@ -144,12 +158,48 @@ public class Menu {
     }
 
     public void paint(SpriteBatch batch) {
+
+        if(escenario.isGanar() && !perder){
+            ganar = true;
+        } else if(ganar) {
+            batch.draw(textureGanar, ANCHO / 2 - (textureGanar.getWidth() * 1.5f) / 2, ALTO / 2 - (textureGanar.getHeight() * 1.5f) / 2, textureGanar.getWidth() * 1.5f, textureGanar.getHeight() * 1.5f);
+            if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+                escenario.darOrden();
+                ganar = false;
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.N)) {
+                escenario.darOrden();
+                activo = true;
+                ganar = false;
+            }
+        }
+
+        if(escenario.getLuchador().getVivo()==false && !perder){
+            perder = true;
+        } else if(perder){
+            batch.draw(texturePerder, ANCHO / 2 - (texturePerder.getWidth() * 1.5f) /2, ALTO / 2 - (texturePerder.getHeight() * 1.5f) /2, texturePerder.getWidth() * 1.5f, texturePerder.getHeight() * 1.5f);
+            if(Gdx.input.isKeyJustPressed(Input.Keys.R)){
+                escenario.darOrden();
+                perder=false;
+            } else if(Gdx.input.isKeyJustPressed(Input.Keys.N)){
+                escenario.darOrden();
+                activo=true;
+                perder=false;
+            }
+        }
+
+
+
+
+        if(!activo){
+            musicaDeFondo.dispose();
+        }
+
         if (activo && !ranking) {
             stage.act(Gdx.graphics.getDeltaTime());
             stage.draw(); // Dibuja todos los actores del stage (botones) DESPUÉS
         }
 
-        if (seguro) {
+        if (seguro && !perder) {
             batch.draw(texturaSeguro, ANCHO / 2 - texturaSeguro.getWidth() / 2, ALTO / 2 - texturaSeguro.getHeight() / 2);
         } else if(ranking&&activo) {
             Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
@@ -160,6 +210,7 @@ public class Menu {
             }
         } else if (activo) {
             menuSprite.draw(batch);
+            musicaDeFondo.play();
         }
     }
 

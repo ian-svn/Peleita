@@ -1,10 +1,11 @@
-
 package io.github.some_example_name;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,14 +18,14 @@ import java.util.List;
 public class Espada extends ObjetoUtilizable{
     private TextureAtlas atlas;
 
-    private TextureRegion frameActual;
-    private List<TextureRegion> frames = new ArrayList<>();
+    private Sprite frameActual;
+    private List<Sprite> frames = new ArrayList<>();
     private int frameIndex;
     private int countCambio = 2, countCambioAux = countCambio;
     private boolean isZarpazo;
+    private Sound sonidoDisparo = Gdx.audio.newSound(Gdx.files.internal("assets/audio/sonidoEspada.wav"));
 
-
-    private int cadencia = 30, cadenciaAux = cadencia;
+    private int cadencia = 20, cadenciaAux = cadencia;
     private int cadenciaInicial = cadencia;
     private Float danioInicial;
 
@@ -32,25 +33,29 @@ public class Espada extends ObjetoUtilizable{
         super(luchador, nombre, calidad, sprite);
         atlas = new TextureAtlas("assets/espada.atlas");
         setSprite(atlas.createSprite("Espada1"));
-        frameActual = getSprite();
+        frameActual = atlas.createSprite("Espada1");
         inicializarFrames(atlas);
         this.isZarpazo = false;
         cadenciaInicial = cadencia;
         danio = 12.5f;
         danioInicial = danio;
         setX(getLuchador().getX());
-        setY(getLuchador().getY());
+        setY(getLuchador().getY()+50);
     }
 
     public void paint(SpriteBatch batch){
         moverse();
         if(getLuchador().getUltimoLado()==0) {
+            frameActual.setRotation(0F);
             batch.draw(frameActual,getX(),getY(), frameActual.getRegionWidth(), frameActual.getRegionHeight());
         } else if(getLuchador().getUltimoLado()==1){
+            frameActual.setRotation(0F);
             batch.draw(frameActual,getX(), getY(), -(frameActual.getRegionWidth()), frameActual.getRegionHeight());
         } else if (getLuchador().getUltimoLado()==2) {
+            frameActual.setRotation(90F);
             batch.draw(frameActual,getX(), getY());
         } else if (getLuchador().getUltimoLado()==3) {
+            frameActual.setRotation(180F);
             batch.draw(frameActual,getX(), getY());
         }
         espadazo();
@@ -85,7 +90,12 @@ public class Espada extends ObjetoUtilizable{
     }
 
     public void zarpazo(){
-        isZarpazo=true;
+        cadenciaAux--;
+        if(!isZarpazo&&cadenciaAux<=0) {
+            isZarpazo = true;
+            sonidoDisparo.play(0.03f);
+            cadenciaAux = cadencia;
+        }
     }
 
     public void espadazo(){
@@ -106,12 +116,12 @@ public class Espada extends ObjetoUtilizable{
     }
 
     public void inicializarFrames(TextureAtlas atlas){
-        frames.add(atlas.findRegion("Espada1"));
-        frames.add(atlas.findRegion("Espada2"));
-        frames.add(atlas.findRegion("Espada3"));
-        frames.add(atlas.findRegion("Espada4"));
-        frames.add(atlas.findRegion("Espada5"));
-        frames.add(atlas.findRegion("Espada6"));
+        frames.add(atlas.createSprite("Espada1"));
+        frames.add(atlas.createSprite("Espada2"));
+        frames.add(atlas.createSprite("Espada3"));
+        frames.add(atlas.createSprite("Espada4"));
+        frames.add(atlas.createSprite("Espada5"));
+        frames.add(atlas.createSprite("Espada6"));
     }
 
     public Rectangle getBounds(){

@@ -20,8 +20,9 @@ import static io.github.some_example_name.mapas.Piso.*;
 public class Puerta {
     private Float x;
     private Float y;
-    public static final Float ANCHO = 165F;
-    public static final Float ALTO = 117F;
+    public static Float ANCHO = 165F;
+    public final Float ALTO_INICIAL = 117F;
+    public static Float ALTO = 117F;
     private Luchador luchador;
     private Texture texture;
     private Sprite sprite;
@@ -31,6 +32,7 @@ public class Puerta {
     private Escenario escenario;
     private Texture spriteRect;
     private TextureAtlas atlas;
+    private int countTiempoEnEscotilla = 50, countTiempoEnEscotillaAux = countTiempoEnEscotilla;
 
     public Puerta(Luchador luchador, Habitacion habitacion, Escenario escenario){
         this.luchador = luchador;
@@ -39,17 +41,24 @@ public class Puerta {
         entrar = false;
         posPuerta = EPosPuerta.ESCOTILLA;
         atlas = new TextureAtlas("puertas.atlas");
-        texture = new Texture(Gdx.files.internal("assets/Escotilla.png"));
+        texture = new Texture(Gdx.files.internal("assets/hazLuz.png"));
         sprite = new Sprite(texture);
-        x = (Mapa.DIM_X * Bloque.ANCHO) / 2;
-        y = (Mapa.DIM_Y * Bloque.ALTO) / 2;
-        sprite.setBounds(x,y,ANCHO,ALTO);
+        if(posPuerta==EPosPuerta.ESCOTILLA){
+            ALTO = 800F;
+        }
+        x = Escenario.ANCHO/2 - ANCHO / 2;
+        y = Escenario.ALTO/2 - ALTO_INICIAL / 2;
+        sprite.setBounds(Escenario.ANCHO/2 - ANCHO / 2,Escenario.ALTO/2 - ALTO_INICIAL / 2,ANCHO,ALTO);
     }
 
     public Puerta(Luchador luchador, EPosPuerta posPuerta, Habitacion habitacion, int nivelActual){
         this.luchador = luchador;
         this.posPuerta = posPuerta;
         this.habitacion = habitacion;
+
+        if(posPuerta!=EPosPuerta.ESCOTILLA){
+            ALTO = 117F;
+        }
         entrar = false;
         atlas = new TextureAtlas("puertas.atlas");
         sprite = atlas.createSprite("infierno");
@@ -92,7 +101,6 @@ public class Puerta {
 
     public void paint(SpriteBatch batch){
         sprite.draw(batch);
-        //spriteRect = new Texture("assets/white.png");
         //batch.draw(spriteRect,x,y,ANCHO-ANCHO/4,ALTO-ALTO/15);
         colision();
     }
@@ -122,15 +130,27 @@ public class Puerta {
             //System.out.println("lucX: " + posX_Luchador + " lucY: " + posY_Luchador);
         }
 
-        if (getBounds().overlaps(luchador.getBoundsGrande())) {
-            entrar = true;
+        if (getBounds().overlaps(luchador.getBoundsPuertas())) {
+            if(posPuerta != EPosPuerta.ESCOTILLA){
+                entrar = true;
+            } else {
+                countTiempoEnEscotillaAux--;
+                if(countTiempoEnEscotillaAux<=0){
+                    countTiempoEnEscotillaAux = countTiempoEnEscotilla;
+                    entrar = true;
+                }
+            }
         } else {
             entrar = false;
         }
     }
 
     public Rectangle getBounds(){
-        return new Rectangle(x,y,ANCHO-ANCHO/4,ALTO);
+        if(posPuerta != EPosPuerta.ESCOTILLA) {
+            return new Rectangle(x, y, ALTO_INICIAL - ANCHO / 4, ALTO_INICIAL);
+        } else {
+            return new Rectangle(x, y, ANCHO, ALTO);
+        }
     }
 
 }

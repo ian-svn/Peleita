@@ -46,9 +46,7 @@ public class Piso {
         habsMapa = new ArrayList<>();
         habitaciones = new ArrayList<>();
         inicializadDN();
-        numHabs = rand.nextInt(4) + 1;
-        //numHabs = rand.nextInt(4) + 15; // 15
-
+        numHabs = rand.nextInt(4) + 15; // 15
         do{
             int numPasHab = rand.nextInt(5) + 2;
             for(int y=0; y<dimY; y++){
@@ -91,6 +89,7 @@ public class Piso {
 
         crearAdyacentes();
         crearSalaReyYBoss();
+
         //for(Habitacion hab : habitaciones){
         //   System.out.println("hab: x: " + hab.getPosX() + " hab: y: " + hab.getPosY());
         //}
@@ -270,61 +269,28 @@ public class Piso {
         }
     }
 
-    public void crearSalaReyYBoss(){
-        int numR = rand.nextInt(3) + 1;
-        boolean hecho = false;
-
-        if(habitaciones.size()==2){
-            habitaciones.get(1).setTipoHabitacion(ETipoHabitacion.PREMIO);
-            habitaciones.get(1).getPedestal().spawn();
-            hecho=true;
-        } else if(habitaciones.size()==3){
-            habitaciones.get(2).setTipoHabitacion(ETipoHabitacion.PREMIO);
-            habitaciones.get(2).getPedestal().spawn();
-            hecho=true;
-        } else if(habitaciones.size()==4){
-            habitaciones.get(3).setTipoHabitacion(ETipoHabitacion.PREMIO);
-            habitaciones.get(3).getPedestal().spawn();
-            hecho=true;
-        }
-
-
-        while(!hecho){
-            for (Habitacion hab : habitaciones) {
-                if(hab.getHabAdys().size()==1){
+    public void crearSalaReyYBoss() {
+        int numHabsRey = 2;
+        int numR = rand.nextInt(10) + 1;
+        do {
+            for(Habitacion hab : habitaciones) {
+                if(hab.getHabAdys().size()<=2 && numR>0 && hab.getPosX() != 5 && hab.getPosY()!=3){
                     numR--;
-                    if (numR <= 0) {
-                        if (hab.getPosX() != 5 && hab.getPosY() != 3) {
-                            hab.setTipoHabitacion(ETipoHabitacion.PREMIO);
-                            hab.getPedestal().spawn();
-                            hecho = true;
-                            break;
-                        }
-                    }
+                } else if(numR<=0) {
+                    hab.setTipoHabitacion(ETipoHabitacion.PREMIO);
+                    hab.getPedestal().spawn();
+                    numR = rand.nextInt(10) + 1;
+                    numHabsRey--;
                 }
             }
-            if(!hecho){
-                for (Habitacion hab : habitaciones) {
-                    if(hab.getHabAdys().size()==2){
-                        numR--;
-                        if (numR <= 0) {
-                            if (hab.getPosX() != 5 && hab.getPosY() != 3) {
-                                hab.setTipoHabitacion(ETipoHabitacion.PREMIO);
-                                hab.getPedestal().spawn();
-                                hecho = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        }while(numHabsRey >= 0);
+    }
 
-        //for (Habitacion hab : habitaciones) {
+
+                //for (Habitacion hab : habitaciones) {
         //    System.out.println(hab.getHabAdys().size() + " " + hab.getTipoHabitacion());
         //}
 
-    }
 
     public void inicializadDN() {
         distribucionNiveles = new char[][]{

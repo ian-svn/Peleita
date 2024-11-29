@@ -35,8 +35,8 @@ public class Lobo extends Enemigo {
         super(x, y, luchador, piso);
         atlas = new TextureAtlas("Enemigos/Lobo.atlas");
         inicializarFrames();
-        ANCHO = 120F;
-        ALTO = 90F;
+        ANCHO = 100F;
+        ALTO = 70F;
         velocidadX = 0F;
         velocidadY = 0F;
         vida=75F;
