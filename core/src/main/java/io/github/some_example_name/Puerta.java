@@ -99,7 +99,7 @@ public class Puerta {
                 break;
             case IZQUIERDA:
                 sprite.setRotation(90);
-                x = 0F + Habitacion.BORDE_PARED;
+                x = 0F + Habitacion.BORDE_PARED + 0.1F;
                 y = (Mapa.DIM_X * Habitacion.CASILLA) / 2 + Habitacion.CASILLA*1.9F;
                 break;
         }
@@ -162,7 +162,7 @@ public class Puerta {
 
     public Rectangle getBounds(){
         if(posPuerta != EPosPuerta.ESCOTILLA) {
-            return new Rectangle(x, y, ALTO_INICIAL - ANCHO / 4, ALTO_INICIAL);
+            return new Rectangle(x, y, ANCHO, ALTO_INICIAL);
         } else {
             return new Rectangle(x, y, 130, 50);
         }

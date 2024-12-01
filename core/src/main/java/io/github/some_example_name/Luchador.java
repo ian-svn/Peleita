@@ -53,7 +53,8 @@ public class Luchador extends Individuo{
     private Float vidaInicial = 25F;
     private Float velocidad = 2.5f, velocidadAux = velocidad;
     private Float velocidadSprint = 5f;
-
+    private final Float ANCHO_INICIAL = ANCHO;
+    private final Float ALTO_INICIAL = ALTO;
     private String nombre;
     private int tiempo;
     private float delta;
@@ -367,7 +368,7 @@ public class Luchador extends Individuo{
     }
 
     public Rectangle getBoundsPuertas(){
-        return new Rectangle(getX()-getANCHO()/2,getY(),ANCHO*2,ALTO);
+        return new Rectangle(getX(),getY(),ANCHO_INICIAL*2F,ALTO_INICIAL*1.5F);
     }
 
 }

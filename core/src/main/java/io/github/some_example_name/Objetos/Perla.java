@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public class Perla extends ObjetoPasivo {
     private Float danioExtra = 10.00F;
-    private Float vidaExtra = -10F;
+    private Float vidaExtra = -5F;
     private int cadenciaExtra = 0;
     private Float velocidadExtra = 0F;
 
